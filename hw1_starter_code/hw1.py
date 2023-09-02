@@ -46,7 +46,22 @@ class MANN(nn.Module):
         """
         #############################
         #### YOUR CODE GOES HERE ####
-        pass
+        # X1 = torch.cat((input_images[:,:-1,...],input_labels[:,:-1,...]),axis=3)
+        X1 = torch.cat((input_labels[:,:-1,...],input_images[:,:-1,...]),axis=3)
+        X1 = torch.reshape(X1,(X1.shape[0],X1.shape[1]*X1.shape[2],X1.shape[3]))
+        
+        X2 = torch.cat((torch.zeros((input_labels.shape[0],input_labels.shape[2],self.num_classes),device=input_images.get_device()),input_images[:,-1,...]),axis=2)
+        X = torch.cat((X1,X2),dim=1)
+        print(X.shape,input_images.shape)
+
+        x,_ = self.layer1(X)
+        y,_ = self.layer2(x)
+        y = torch.reshape(y,input_labels.shape)
+
+        return y
+
+
+        # pass
         #############################
 
     def loss_function(self, preds, labels):
@@ -62,7 +77,17 @@ class MANN(nn.Module):
         """
         #############################
         #### YOUR CODE GOES HERE ####
-        pass
+
+        preds = torch.reshape(preds[:,-1,...],(preds.shape[0]*preds.shape[1],preds.shape[2]))
+        # print(preds.shape)
+        labels = torch.argmax(torch.reshape(labels[:,-1,...],(labels.shape[0]*labels.shape[1],labels.shape[2])),dim=1)
+        # print(labels.shape)
+        loss = torch.nn.CrossEntropyLoss()
+
+        return(loss(preds,labels))
+
+
+        # pass
         #############################
 
 

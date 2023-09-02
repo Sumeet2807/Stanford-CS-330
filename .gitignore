@@ -163,3 +163,6 @@ env/*
 */run/*
 *movielens*
 __MACOSX*
+*omniglot*
+.vscode
+runs*

@@ -134,7 +134,36 @@ class DataGenerator(IterableDataset):
 
         #############################
         #### YOUR CODE GOES HERE ####
-        pass
+        
+        len_folders = len(self.folders)
+        indices = np.random.randint(0,len_folders,size=self.num_classes)
+        labels = np.eye(self.num_classes)
+        images_labels = get_images(np.array(self.folders)[indices].tolist(), labels, nb_samples=self.num_samples_per_class, shuffle=True)
+        label_dict = {}
+        for image_label in images_labels:
+            label = tuple(image_label[0].tolist())
+            if label not in label_dict:
+                label_dict[label] = []
+            label_dict[label].append(image_label[1])
+
+        X=[]
+        y=[]
+        for key in label_dict.keys():
+            images = []
+            labels= []
+            for path in label_dict[key]:
+                images.append(self.image_file_to_array(path, 784))
+                labels.append(np.array(key,dtype=np.int32))
+            X.append(images)
+            y.append(labels)
+        X = np.transpose(np.array(X),(1,0,2))
+        y = np.transpose(np.array(y),(1,0,2))
+        indices = np.arange(0,X.shape[1])
+        np.random.shuffle(indices)
+        X[-1] = X[-1][indices,:]
+        y[-1] = y[-1][indices,:]
+        return (X,y)
+        
         #############################
 
     def __iter__(self):
